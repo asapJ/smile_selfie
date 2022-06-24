@@ -1,12 +1,8 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:smile_selfie/smile_selfie.dart';
-import 'dart:ui' as ui;
 
 class SelfieCaptureWidget extends StatefulWidget {
   SelfieCaptureWidget({Key? key, required this.smileSelfieOptions})
@@ -55,9 +51,12 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
           ),
         );
       }
-      setState(() {
-        _cameraFound = true;
-      });
+      if (mounted) {
+        setState(() {
+          _cameraFound = true;
+        });
+      }
+
       _startLiveFeed();
     } catch (e) {
       debugPrint(e.toString());
@@ -137,13 +136,12 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
     // to prevent scaling down, invert the value
     if (scale < 1) scale = 1 / scale;
 
-    return ClipRRect(
-      borderRadius:
-          BorderRadius.circular(widget.smileSelfieOptions.imagePreviewSize * 2),
+    return ClipOval(
+      clipper: CircleRevealClipper(),
       child: Container(
         height: widget.smileSelfieOptions.imagePreviewSize,
         width: widget.smileSelfieOptions.imagePreviewSize,
-        padding: const EdgeInsets.all(24),
+        // padding: const EdgeInsets.all(24),
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.black,
@@ -170,7 +168,9 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
         return;
       }
       _controller?.startImageStream(_processCameraImage);
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -226,7 +226,9 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
     final imageData = inputImage;
     if (_isBusy) return;
     _isBusy = true;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
     final faces = await _faceDetector.processImage(imageData);
 
     if (faces.isNotEmpty) {
@@ -275,30 +277,32 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
       XFile file = await cameraController.takePicture();
 
       return file;
-    } on CameraException catch (e) {
-      _showCameraException(e);
-
+    } on CameraException catch (_) {
       return null;
     }
   }
-
-  void _showCameraException(CameraException e) {
-    print('DATA  ${e.description}');
-  }
 }
 
-class SelfieFoundView extends StatelessWidget {
-  const SelfieFoundView({Key? key, required this.data}) : super(key: key);
-  final String data;
+class CircleRevealClipper extends CustomClipper<Rect> {
+  CircleRevealClipper();
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: Image.file(File(data)));
+  Rect getClip(Size size) {
+    final epicenter = Offset(size.width, size.height);
+
+    // Calculate distance from epicenter to the top left corner to make sure clip the image into circle.
+
+    final distanceToCorner = epicenter.dy;
+
+    final radius = distanceToCorner;
+    final diameter = radius;
+
+    return Rect.fromLTWH(
+        (epicenter.dx - radius) / 2, epicenter.dy - radius, diameter, diameter);
   }
 
-  static Future<ui.Image> bytesToImage(Uint8List imgBytes) async {
-    ui.Codec codec = await ui.instantiateImageCodec(imgBytes);
-    ui.FrameInfo frame = await codec.getNextFrame();
-    return frame.image;
+  @override
+  bool shouldReclip(CustomClipper<Rect> oldClipper) {
+    return true;
   }
 }

@@ -64,7 +64,7 @@ class _HomeState extends State<Home> {
                 onPressed: () async {
                   const options = SmileSelfieOptions(
                     eyesOpenTreshold: 0.1, //between 0.0 to 1
-                    imagePreviewSize: 500,
+                    imagePreviewSize: 400,
                     smileTreshold: 0.1, //between 0.0 to 1,
                     label: 'Smile to take a selfie',
                   );
