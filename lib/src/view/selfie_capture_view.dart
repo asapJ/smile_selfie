@@ -25,8 +25,7 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
   bool _cameraFound = false;
   final FaceDetector _faceDetector = FaceDetector(
     options: FaceDetectorOptions(
-      enableClassification: true,
-    ),
+        enableClassification: true, performanceMode: FaceDetectorMode.accurate),
   );
 
   List<CameraDescription> _cameras = [];
@@ -126,28 +125,17 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
       return Container();
     }
 
-    final size = MediaQuery.of(context).size;
-    // calculate scale depending on screen and camera ratios
-    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
-    // because camera preview size is received as landscape
-    // but we're calculating for portrait orientation
-    var scale = size.aspectRatio * _controller!.value.aspectRatio;
-
-    // to prevent scaling down, invert the value
-    if (scale < 1) scale = 1 / scale;
-
     return ClipOval(
       clipper: CircleRevealClipper(),
       child: Container(
         height: widget.smileSelfieOptions.imagePreviewSize,
         width: widget.smileSelfieOptions.imagePreviewSize,
-        // padding: const EdgeInsets.all(24),
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.black,
         ),
         child: Transform.scale(
-          scale: scale,
+          scale: _controller!.value.aspectRatio,
           child: Center(
             child: CameraPreview(_controller!),
           ),

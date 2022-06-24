@@ -63,9 +63,9 @@ class _HomeState extends State<Home> {
             ElevatedButton(
                 onPressed: () async {
                   const options = SmileSelfieOptions(
-                    eyesOpenTreshold: 0.1, //between 0.0 to 1
+                    eyesOpenTreshold: 0.5, //between 0.0 to 1
                     imagePreviewSize: 400,
-                    smileTreshold: 0.1, //between 0.0 to 1,
+                    smileTreshold: 0.5, //between 0.0 to 1,
                     label: 'Smile to take a selfie',
                   );
                   String path = await SmileSelfie.captureSelfie(context,
