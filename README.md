@@ -75,8 +75,8 @@ try {
 ```dart
 try {
         const options = SmileSelfieOptions(
-                    eyesOpenTreshold: 0.1, //between 0.0 to 0.1
-                    smileTreshold: 0.1, //between 0.0 to 0.1,
+                    eyesOpenTreshold: 0.1, //between 0.0 to 1
+                    smileTreshold: 0.1, //between 0.0 to 1,
                     imagePreviewSize: 500,
                     label: 'Smile to take a selfie',
                   );
