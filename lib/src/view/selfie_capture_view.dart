@@ -80,11 +80,26 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
         bottomNavigationBar: const Padding(
             padding: EdgeInsets.all(24),
             child: SizedBox(
               height: 30,
             )),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.black,
+                ))
+          ],
+        ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -100,7 +115,7 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
               height: 50,
             ),
             Text(
-              widget.smileSelfieOptions.title,
+              widget.smileSelfieOptions.label,
               textAlign: TextAlign.center,
             )
           ],

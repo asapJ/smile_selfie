@@ -55,13 +55,6 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: const Text('Smile Selfie Demo'),
         centerTitle: true,
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(Icons.close))
-        ],
       ),
       body: Center(
         child: Column(
@@ -69,7 +62,14 @@ class _HomeState extends State<Home> {
           children: [
             ElevatedButton(
                 onPressed: () async {
-                  String path = await SmileSelfie.captureSelfie(context);
+                  const options = SmileSelfieOptions(
+                    eyesOpenTreshold: 0.1, //between 0.0 to 0.1
+                    imagePreviewSize: 500,
+                    smileTreshold: 0.1, //between 0.0 to 0.1,
+                    label: 'Smile to take a selfie',
+                  );
+                  String path = await SmileSelfie.captureSelfie(context,
+                      smileSelfieOptions: options);
                   setState(() {
                     _path = path;
                   });
