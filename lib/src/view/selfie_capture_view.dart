@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -5,14 +7,16 @@ import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:smile_selfie/smile_selfie.dart';
 
 class SelfieCaptureWidget extends StatefulWidget {
-  SelfieCaptureWidget({Key? key, required this.smileSelfieOptions})
-      : assert(smileSelfieOptions.smileTreshold < 1.0,
-            "Invalid Smile Treshold: ${smileSelfieOptions.smileTreshold}"),
-        assert(smileSelfieOptions.eyesOpenTreshold < 1.0,
-            "Invalid Eyes Open Treshold Treshold: ${smileSelfieOptions.smileTreshold}"),
+  SelfieCaptureWidget(
+      {Key? key, required this.options, required this.decoration})
+      : assert(options.smileProbability < 1.0,
+            "Invalid Smile Probabilty: ${options.smileProbability}"),
+        assert(options.eyesOpenProbabilty < 1.0,
+            "Invalid Eyes Open Probability: ${options.eyesOpenProbabilty}"),
         super(key: key);
 
-  final SmileSelfieOptions smileSelfieOptions;
+  final SmileSelfieOptions options;
+  final SmileSelfieDecoration decoration;
 
   @override
   State<SelfieCaptureWidget> createState() => _SelfieCaptureWidgetState();
@@ -56,6 +60,17 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
         });
       }
 
+      if (widget.options.delay != null) {
+        _isBusy = true;
+        Timer(widget.options.delay!, () {
+          if (mounted) {
+            setState(() {
+              _isBusy = false;
+            });
+          }
+        });
+      }
+
       _startLiveFeed();
     } catch (e) {
       debugPrint(e.toString());
@@ -78,29 +93,34 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        bottomNavigationBar: const Padding(
-            padding: EdgeInsets.all(24),
-            child: SizedBox(
-              height: 30,
-            )),
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(
-                  Icons.close,
-                  color: Colors.black,
-                ))
+        backgroundColor: widget.decoration.backgroundColor,
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            widget.decoration.footer,
           ],
         ),
+        appBar: widget.decoration.appBar ??
+            AppBar(
+              backgroundColor: widget.decoration.backgroundColor,
+              automaticallyImplyLeading: false,
+              elevation: 0,
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(
+                      Icons.close,
+                      color: widget.decoration.foregroundColor,
+                    ))
+              ],
+            ),
         body: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            widget.decoration.header,
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -109,13 +129,6 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
                 ],
               ),
             ),
-            const SizedBox(
-              height: 50,
-            ),
-            Text(
-              widget.smileSelfieOptions.label,
-              textAlign: TextAlign.center,
-            )
           ],
         ));
   }
@@ -127,13 +140,13 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
 
     return ClipOval(
       clipper: CircleRevealClipper(),
-      child: Container(
-        height: widget.smileSelfieOptions.imagePreviewSize,
-        width: widget.smileSelfieOptions.imagePreviewSize,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.black,
-        ),
+      child: SizedBox(
+        height: widget.decoration.previewSize,
+        width: widget.decoration.previewSize,
+        // decoration: const BoxDecoration(
+        //   shape: BoxShape.circle,
+        //   color: Colors.black,
+        // ),
         child: Transform.scale(
           scale: _controller!.value.aspectRatio,
           child: Center(
@@ -211,8 +224,9 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
   }
 
   Future<void> _processInpuImage(InputImage inputImage) async {
-    final imageData = inputImage;
     if (_isBusy) return;
+    print("DATA: I AM IN");
+    final imageData = inputImage;
     _isBusy = true;
     if (mounted) {
       setState(() {});
@@ -229,14 +243,13 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
         double smile = face.smilingProbability ?? 0;
         double leftEyesOpen = face.leftEyeOpenProbability ?? 0;
         double rightEyesOpen = face.rightEyeOpenProbability ?? 0;
-        if (smile >= widget.smileSelfieOptions.smileTreshold &&
-            leftEyesOpen >= widget.smileSelfieOptions.eyesOpenTreshold &&
-            rightEyesOpen >= widget.smileSelfieOptions.eyesOpenTreshold) {
+        if (smile >= widget.options.smileProbability &&
+            leftEyesOpen >= widget.options.eyesOpenProbabilty &&
+            rightEyesOpen >= widget.options.eyesOpenProbabilty) {
           final file = await _takePicture();
           if (file != null) {
             Navigator.of(context).pop(file.path);
           }
-          // return;
         }
       }
     }

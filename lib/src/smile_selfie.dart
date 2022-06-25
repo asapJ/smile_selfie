@@ -35,13 +35,14 @@ class SmileSelfie {
   }
 
   static Future<String> captureSelfie(BuildContext context,
-      {SmileSelfieOptions? smileSelfieOptions}) async {
+      {SmileSelfieOptions? smileSelfieOptions,
+      SmileSelfieDecoration? selfieDecoration}) async {
     final result = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => SelfieCaptureWidget(
-                  smileSelfieOptions:
-                      smileSelfieOptions ?? const SmileSelfieOptions(),
+                  options: smileSelfieOptions ?? const SmileSelfieOptions(),
+                  decoration: selfieDecoration ?? const SmileSelfieDecoration(),
                 )));
 
     return result.toString();

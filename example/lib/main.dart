@@ -63,13 +63,42 @@ class _HomeState extends State<Home> {
             ElevatedButton(
                 onPressed: () async {
                   const options = SmileSelfieOptions(
-                    eyesOpenTreshold: 0.5, //between 0.0 to 1
-                    imagePreviewSize: 400,
-                    smileTreshold: 0.5, //between 0.0 to 1,
-                    label: 'Smile to take a selfie',
-                  );
+                      eyesOpenProbabilty: 0.5, //between 0.0 to 1
+                      smileProbability: 0.5, //between 0.0 to 1,
+                      delay: Duration(seconds: 5));
+
+                  final decoration = SmileSelfieDecoration(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      footer: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          children: const [
+                            Text(
+                              'Powered by Google ML Kit',
+                              style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.w600),
+                            )
+                          ],
+                        ),
+                      ),
+                      header: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          SizedBox(
+                            height: 50,
+                          ),
+                          Text(
+                            "Smile to take a selfie",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
+                          )
+                        ],
+                      ),
+                      previewSize: 400);
                   String path = await SmileSelfie.captureSelfie(context,
-                      smileSelfieOptions: options);
+                      smileSelfieOptions: options,
+                      selfieDecoration: decoration);
                   setState(() {
                     _path = path;
                   });

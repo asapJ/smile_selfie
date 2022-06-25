@@ -73,15 +73,46 @@ try {
 
 #### Capture Selfie
 ```dart
+
+
+const options = SmileSelfieOptions(
+                      eyesOpenProbabilty: 0.5, //between 0.0 to 1
+                      smileProbability: 0.5, //between 0.0 to 1,
+                      delay: Duration(seconds: 5));
+
+                  final decoration = SmileSelfieDecoration(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      footer: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          children: const [
+                            Text(
+                              'Powered by Google',
+                              style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.w600),
+                            )
+                          ],
+                        ),
+                      ),
+                      header: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          SizedBox(
+                            height: 50,
+                          ),
+                          Text(
+                            "Smile to take a selfie",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
+                          )
+                        ],
+                      ),
+                      previewSize: 400);
+
 try {
-        const options = SmileSelfieOptions(
-                    eyesOpenTreshold: 0.1, //between 0.0 to 1
-                    smileTreshold: 0.1, //between 0.0 to 1,
-                    imagePreviewSize: 500,
-                    label: 'Smile to take a selfie',
-                  );
-        String path = await SmileSelfie.captureSelfie(context,
-                      smileSelfieOptions: options);
+     
+        String path = await SmileSelfie.captureSelfie(context, smileSelfieOptions: options,selfieDecoration: decoration);
     } 
     catch (e) {
         print(e);
