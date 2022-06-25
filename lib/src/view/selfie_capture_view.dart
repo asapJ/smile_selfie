@@ -139,14 +139,10 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
     }
 
     return ClipOval(
-      clipper: CircleRevealClipper(),
+      clipper: widget.decoration.clipper ?? CircleRevealClipper(),
       child: SizedBox(
         height: widget.decoration.previewSize,
         width: widget.decoration.previewSize,
-        // decoration: const BoxDecoration(
-        //   shape: BoxShape.circle,
-        //   color: Colors.black,
-        // ),
         child: Transform.scale(
           scale: _controller!.value.aspectRatio,
           child: Center(
@@ -176,7 +172,6 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
   }
 
   Future _stopLiveFeed() async {
-    // await _controller?.stopImageStream();
     await _controller?.dispose();
     _controller = null;
   }
@@ -225,7 +220,6 @@ class _SelfieCaptureWidgetState extends State<SelfieCaptureWidget> {
 
   Future<void> _processInpuImage(InputImage inputImage) async {
     if (_isBusy) return;
-    print("DATA: I AM IN");
     final imageData = inputImage;
     _isBusy = true;
     if (mounted) {
